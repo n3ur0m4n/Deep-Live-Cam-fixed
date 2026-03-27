@@ -1155,6 +1155,8 @@ def _processing_thread_func(capture_queue, processed_queue, stop_event,
             if modules.globals.source_path and modules.globals.source_path != last_source_path:
                 last_source_path = modules.globals.source_path
                 source_image = get_one_face(cv2.imread(modules.globals.source_path))
+                if source_image is None:
+                    update_status("No face detected in source image!")
 
             # Read latest detection results (brief lock to avoid blocking detection thread)
             with detection_lock:

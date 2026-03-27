@@ -30,11 +30,13 @@ def get_face_analyser() -> Any:
                     providers=modules.globals.execution_providers,
                     allowed_modules=['detection', 'recognition', 'landmark_2d_106']
                 )
-                FACE_ANALYSER.prepare(ctx_id=0, det_size=(640, 640))
+                FACE_ANALYSER.prepare(ctx_id=0, det_size=(640, 640), det_thresh=0.35)
     return FACE_ANALYSER
 
 
 def get_one_face(frame: Frame) -> Any:
+    if frame is None:
+        return None
     face = get_face_analyser().get(frame)
     try:
         return min(face, key=lambda x: x.bbox[0])
@@ -43,6 +45,8 @@ def get_one_face(frame: Frame) -> Any:
 
 
 def get_many_faces(frame: Frame) -> Any:
+    if frame is None:
+        return None
     try:
         return get_face_analyser().get(frame)
     except IndexError:
