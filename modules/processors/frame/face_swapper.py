@@ -3,6 +3,7 @@ import cv2
 import insightface
 import threading
 import numpy as np
+import warnings
 import platform
 import modules.globals
 import modules.processors.frame.core
@@ -153,9 +154,11 @@ def swap_face(source_face: Face, target_face: Face, temp_frame: Frame) -> Frame:
         if not temp_frame.flags['C_CONTIGUOUS']:
             temp_frame = np.ascontiguousarray(temp_frame)
         
-        swapped_frame_raw = face_swapper.get(
-            temp_frame, target_face, source_face, paste_back=True
-        )
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=RuntimeWarning, message='invalid value encountered in cast')
+            swapped_frame_raw = face_swapper.get(
+                temp_frame, target_face, source_face, paste_back=True
+            )
 
         # --- START: CRITICAL FIX FOR ORT 1.17 ---
         # Check the output type and range from the model
